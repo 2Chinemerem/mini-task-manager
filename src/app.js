@@ -5,17 +5,20 @@ const passport = require('passport');
 const userRoutes = require('./routes/authRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const tokenRoutes = require('./routes/tokenRoutes')
+const jwksRoutes = require('./routes/jwksRoutes');
 const cookieParser = require('cookie-parser');
 
 app.use(express.json());
-app.use(cookieParser());
+
 require('./config/passport')(passport);
 app.use(passport.initialize());
 
 
-
+app.use(cookieParser());
 app.use('/api/auth', userRoutes, tokenRoutes);
 app.use('/api', taskRoutes);
+app.use('/', jwksRoutes);
+
 
 app.listen(3001, (err) => {
     if (err) {

@@ -33,7 +33,29 @@ async function getTasks(req, res, next){
     }
 }
 
-function updateTask(req, res, next){
+async function getSpecificTask(req, res, next){
+    const user = req.user._id;
+    const taskId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(taskId)) {
+        return res.status(400).json({ 
+            status: 'fail', 
+            message: 'Invalid Task ID format' 
+        });
+    }
+
+    const taskInfo = await Task.findOne({_id: taskId, owner: user});
+    if(!taskInfo){
+        const error = new Error('Task not found ');
+        error.statusCode = 404;
+        return next(error);
+    }
+    res.status(200).json({status: 'success', task: taskInfo});
+}
+
+
+
+async function updateTask(req, res, next){
     const user = req.user._id;
     const taskId = req.params.id;
     const {title, description, status} = req.body;
@@ -45,7 +67,7 @@ function updateTask(req, res, next){
         });
     }
     
-    const updatedTask= Task.findOneAndUpdate({_id: taskId, owner: user}, {title, description, status}, {new: true});
+    const updatedTask= await Task.findOneAndUpdate({_id: taskId, owner: user}, {title, description, status}, {returnDocument: 'after'});
     if(!updatedTask){
         const error = new Error('Task not found');
         error.statusCode = 404;
@@ -101,5 +123,5 @@ async function deleteAnyTask(req, res, next){
 }
 
 
-module.exports = {createTask, getTasks, updateTask, deleteTask, getAllTasks, deleteAnyTask};
+module.exports = {createTask, getTasks, updateTask, deleteTask, getAllTasks, deleteAnyTask, getSpecificTask};
 

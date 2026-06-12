@@ -17,7 +17,13 @@ function genKeyPairSync(){
 }
 
 
-const keys = genKeyPairSync();
 
-fs.writeFileSync('private.key', keys.privateKey);
-fs.writeFileSync('public.key', keys.publicKey);
+if (require.main === module) {
+    const keys = genKeyPairSync();
+
+    fs.writeFileSync('private.key', keys.privateKey);
+    fs.writeFileSync('public.key', keys.publicKey);
+}
+
+
+module.exports= {genKeyPairSync};

@@ -25,6 +25,16 @@ const RefreshTokenSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    family:{
+        type: String,
+        required: true,
+        indexed: true
+    },
+    replacedByToken: {
+        type: String,
+        default: null
+    },
+
     expiresAt: {
         type: Date,
         required: true
@@ -32,7 +42,7 @@ const RefreshTokenSchema = new mongoose.Schema({
 
     createdByIp:{
         type: String,
-    }
+    },
 });
 
 isExpired = function() {

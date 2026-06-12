@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const {generateAccessToken, verifyToken, generateRefreshToken, hashToken} = require('../utils/tokenUtils');
 const RefreshToken = require('../models/RefreshToken');
-
+const crypto = require('crypto');
 async function registerUser(req, res, next){
     const {username, email, password} = req.body;
     const existingUser = await User.findOne({email: email});
@@ -57,10 +57,12 @@ async function loginUser(req, res, next){
 
     const generatedRefreshToken = generateRefreshToken();
     const hashedRefreshToken = hashToken(generatedRefreshToken);
+    const familyId= crypto.randomUUID();
 
     const refreshTokenDoc = new RefreshToken({
         token: hashedRefreshToken,
         owner: user._id,
+        family: familyId,
         expiresAt: new Date(Date.now() + 7*24*60*60*1000),
         createdByIp: req.ip
     });
@@ -74,7 +76,7 @@ async function loginUser(req, res, next){
         maxAge: 7*24*60*60*1000,
         secure: process.env.NODE_ENV === 'production',
     });
-    
+    console.log('Generated Refresh Token:', generatedRefreshToken);
 
 
 
